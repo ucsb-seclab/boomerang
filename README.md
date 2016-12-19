@@ -2,11 +2,11 @@
 ## Contents
 1. [Introduction](#1-introduction)
 2. [Folder Structure](#2-folder-structure)
-    2.1  [Static Analysis Tool](#21-static-analysis-tool) 
-    2.2 [Proof of Concept Exploits](#22-proof-of-concept-exploits)
-    2.3 [Cooperative Semantic Reconstruction](#23-cooperative-semantic-reconstruction)
-    2.4 [Papers](#24-papers)
-    2.5 [Presentation](#25-presentations)
+    2. [Static Analysis Tool](#21-static-analysis-tool)     
+    2. [Proof of Concept Exploits](#22-proof-of-concept-exploits)    
+    2. [Cooperative Semantic Reconstruction](#23-cooperative-semantic-reconstruction)    
+    2. [Papers](#24-papers)    
+    2. [Presentation](#25-presentations)
 3. [Contact](#3-contact)
 4. [Coming Soon](#4-coming-soon)
 
@@ -49,4 +49,3 @@ We now describe the different folders in this repo, along with their purpose.
 
 ---
 ## 4. Coming Soon
-
