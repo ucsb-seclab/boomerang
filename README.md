@@ -8,7 +8,8 @@
     2. [Papers](#24-papers)    
     2. [Presentation](#25-presentations)
 3. [Contact](#3-contact)
-4. [Coming Soon](#4-coming-soon)
+4. [Impact](#4-impact)
+5. [Coming Soon](#5-coming-soon)
 
 ## 1. Introduction
 BOOMERANG , a class of vulnerabilities that stem from the semantic gap 
@@ -36,10 +37,22 @@ vulnerabilities in two commercial TEE implementations to create [proof-of-concep
 We now describe the different folders in this repo, along with their purpose.
 
 ### 2.1 Static Analysis Tool
+We created a static analysis technique to locate exploitable BOOMERANG flaws using simulated execution, which we implemented using the angr static analysis and reverse-engineering framework.
+This tool currently supports TAs of QSEE and Huawei..
+
+More details can be found at [static_analysis_tool](https://github.com/ucsb-seclab/boomerang/tree/master/static_analysis_tool)
 ### 2.2 Proof of Concept Exploits
+We developed a proof-of-concept arbitrary memory leak (by using physical address) on Qualcomm chipsets and privilege-escalation exploit on Huawei chipsets to verify the hypothesized severity of BOOMERANG.
+
+More details can be found at [exploits](https://github.com/ucsb-seclab/boomerang/tree/master/exploits)
 ### 2.3 Cooperative Semantic Reconstruction
+Due to the limitations of existing BOOMERANG defenses, we propose a novel defense Cooperative Semantic Reconstruction (CSR), which is capable of bridging the semantic gap between the two worlds with minimal modification and minimal overhead. In this defense, the trusted OS and the untrusted OS both cooperate to verify memory pointers that are passed into the secure world to ensure that the untrusted application indeed has permission to access the referenced memory region.
+
+We used [OP-TEE](https://github.com/OP-TEE/optee_os) to implement and evaluate our defense. More details can be found at: [optee](https://github.com/ucsb-seclab/boomerang/tree/master/optee)
 ### 2.4 Papers
+All papers and other academic publications based on this can be found under [papers](https://github.com/ucsb-seclab/boomerang/tree/master/papers).
 ### 2.5 Presentations
+All the presentations at various venues can be found under [presentations](https://github.com/ucsb-seclab/boomerang/tree/master/presentations)
 
 ---
 ## 3. Contact
@@ -48,4 +61,13 @@ We now describe the different folders in this repo, along with their purpose.
 *Non-support related:* machiry@cs.ucsb.edu
 
 ---
-## 4. Coming Soon
+## 4. Impact
+These vulnerabilities, and our corresponding exploits, affect hundreds of millions of devices that are currently in production today.
+Our findings have been reported to and verified by the corresponding vendors, who are currently in the process of creating security patches.
+
+CVEs Issued: **CVE-2016-5349, CVE-2016-8762, CVE-2016-8763** and **CVE-2016-8764**
+
+---
+## 5. Coming Soon
+A patch file with all the modifications we have done to OP-TEE, so that its easy to port our defense to different versions of OP-TEE.
+
