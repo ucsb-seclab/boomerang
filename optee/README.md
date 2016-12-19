@@ -7,7 +7,7 @@
 4. [Get and build OP-TEE software](#4-get-and-build-op-tee-software)
     4. [Prerequisites](#41-prerequisites)
     4. [Basic setup](#42-basic-setup)
-    5. [HiKey](#55-hikey)
+    4. [HiKey](#43-hikey)
 6. [Load driver, tee-supplicant and run xtest](#6-load-driver-tee-supplicant-and-run-xtest)
 7. [Coding standards](#7-coding-standards)
     7. [checkpatch](#71-checkpatch)
