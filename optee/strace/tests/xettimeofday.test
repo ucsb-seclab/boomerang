@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Check gettimeofday and settimeofday syscalls decoding.
+
+. "${srcdir=.}/init.sh"
+run_strace_match_diff -a20 -e trace=gettimeofday,settimeofday

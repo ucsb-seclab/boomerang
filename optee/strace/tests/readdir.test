@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Check readdir syscall decoding.
+
+. "${srcdir=.}/init.sh"
+
+rm -rf -- "$LOG".dir
+run_strace_match_diff -a16

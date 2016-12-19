@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Call all shutdown/stop/kill scripts
+echo ""
+echo "calling shutdown scripts.."
+run-parts -a stop /etc/rc.d
+
+# Unmount all filesystems
+echo "unmounting file systems..."
+/bin/umount -a -r

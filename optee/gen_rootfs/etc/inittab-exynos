@@ -1,0 +1,9 @@
+#
+# /etc/inittab
+#
+::sysinit:/etc/init.d/rc.init
+# ttySAC2 used by Exynos
+ttySAC2::askfirst:/bin/sh -sc ". /etc/profile"
+::ctrlaltdel:/sbin/poweroff
+::shutdown:/etc/init.d/rc.shutdown
+::restart:/sbin/init

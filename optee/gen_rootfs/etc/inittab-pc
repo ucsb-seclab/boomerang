@@ -1,0 +1,10 @@
+#
+# /etc/inittab
+#
+::sysinit:/etc/init.d/rc.init
+# Use serial port
+tty1::askfirst:/bin/sh -sc ". /etc/profile"
+ttyS0::askfirst:/bin/sh -sc ". /etc/profile"
+::ctrlaltdel:/sbin/poweroff
+::shutdown:/etc/init.d/rc.shutdown
+::restart:/sbin/init

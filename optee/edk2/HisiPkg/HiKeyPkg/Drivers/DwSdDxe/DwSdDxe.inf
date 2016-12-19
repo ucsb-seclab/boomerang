@@ -1,0 +1,56 @@
+#/** @file
+#  INF file for the MMC Host Protocol implementation for the DesignWare MMC.
+#
+#  Copyright (c) 2014, Linaro Limited. All rights reserved.
+#  Copyright (c) 2014, Hisilicon Limited. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = DwSdDxe
+  FILE_GUID                      = 594bfe73-5e18-4f12-8119-19db8c5fc849
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+
+  ENTRY_POINT                    = DwSdDxeInitialize
+
+[Sources.common]
+  DwSdDxe.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  HisiPkg/HisiPlatformPkg.dec
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  ArmLib
+  BaseLib
+  BaseMemoryLib
+  CacheMaintenanceLib
+  IoLib
+  TimerLib
+  UefiDriverEntryPoint
+  UefiLib
+  UncachedMemoryAllocationLib
+
+[Protocols]
+  gEfiCpuArchProtocolGuid
+  gEfiDevicePathProtocolGuid
+  gEfiMmcHostProtocolGuid
+
+[Pcd]
+  gHwTokenSpaceGuid.PcdDwSdBaseAddress
+  gHwTokenSpaceGuid.PcdDwSdClockFrequencyInHz
+
+[Depex]
+  TRUE

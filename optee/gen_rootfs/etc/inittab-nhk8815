@@ -1,0 +1,9 @@
+#
+# /etc/inittab
+#
+::sysinit:/etc/init.d/rc.init
+# ttyAMA1 used by Nomadik NHK8815
+ttyAMA1::askfirst:/bin/sh -sc ". /etc/profile"
+::ctrlaltdel:/sbin/poweroff
+::shutdown:/etc/init.d/rc.shutdown
+::restart:/sbin/init

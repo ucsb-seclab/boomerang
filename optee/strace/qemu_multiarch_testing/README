@@ -1,0 +1,49 @@
+How to test strace build using Aboriginal Linux's system images.
+
+* Put a autoconf'ed strace source tree into hdc.dir/strace dir.
+For example, this should work:
+git clone git://strace.git.sourceforge.net/gitroot/strace/strace &&
+cd strace && ./bootstrap
+
+* Run ./make-hdc-img.sh: it will generate ext2 image file,
+hdc.img, from hdc.dir/* data. This requires root for loop mount.
+
+* Download and unpack, or build from source and unpack
+one or more system-image-ARCH directories into this directory
+(the one which contains this README).
+
+* Run: ./parallel-build-hdc-img.sh system-image-DIR1 system-image-DIR2...
+(background it if you don't want to see "Waiting to finish" thing).
+This runs a strace build in several qemu virtual machines in parallel.
+
+* Observe system-image-*.log file(s) with growing log of strace build.
+
+There is no automated detection of errors for now: you need to examine
+logs yourself.
+
+For me, the following system images worked (tests passed/skipped/failed):
+system-image-armv4l  - 14/14/1 (failed: stat32-v.test - wrong stat decoding, sun_path.test - libc error)
+system-image-armv4tl - 15/14/0
+system-image-armv5l  - 15/14/0
+system-image-armv6l  - 15/14/0
+system-image-i486    - 14/14/1 (failed: count.test - grep segfault)
+system-image-i586    - 14/14/1 (failed: count.test - grep segfault)
+system-image-i686    - 14/14/1 (failed: count.test - grep segfault)
+system-image-mips    - 15/14/0
+system-image-mipsel  - 15/14/0
+system-image-powerpc - 13/14/2 (failed: ipc_sem.test - ipc_sem segfault)
+system-image-sparc   - 13/14/2 (failed: ipc_sem.test - ipc_sem segfault)
+system-image-x86_64  - 14/15/0
+
+And these did not:
+system-image-m68k    - qemu-system-m68k: -M q800: Unsupported machine type
+system-image-mips64  - init dies before reaching /mnt/init
+system-image-sh4     - hdc does not mount (no support for 2 disks)
+
+
+To debug a build problem in one of sandboxes, change keep_hdb
+to "keep_hdb=true" in parallel-build-hdc-img.sh
+
+This preserves system-image-DIR1/hdb.img after the build,
+so you can go into system-image-DIR1 and run
+"HDB=hdb.img ./dev-environment.sh" to debug the problem.

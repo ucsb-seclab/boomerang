@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Check ppoll syscall decoding.
+
+. "${srcdir=.}/init.sh"
+
+run_prog
+run_strace -a30 -s2 -e ppoll $args
+match_grep
+run_strace -a30 -v -s2 -e ppoll $args
+match_grep "$LOG" "$srcdir/$NAME-v.expected"
+
+exit 0

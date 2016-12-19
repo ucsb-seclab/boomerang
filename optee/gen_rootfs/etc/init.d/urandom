@@ -1,0 +1,39 @@
+#!/bin/sh
+
+[ -c /dev/urandom ] || exit 0
+
+SAVEDSEED=/var/lib/urandom/random-seed
+POOLSIZE=512
+
+[ -f /proc/sys/kernel/random/poolsize ] && POOLSIZE="$(cat /proc/sys/kernel/random/poolsize)"
+
+case "$1" in
+     start)
+	# Load entropy pool from flash
+	if [ -f $SAVEDSEED ]
+	then
+		# Handle locally increased pool size
+		echo "reading in saved random seed from ${SAVEDSEED}"
+		SAVEDSIZE="$(stat -t ${SAVEDSEED} | cut -d " " -f 2)"
+		if [ "$SAVEDSIZE" -gt "$POOLSIZE" ]
+		then
+			[ -w /proc/sys/kernel/random/poolsize ] && echo $POOLSIZE > /proc/sys/kernel/random/poolsize
+			POOLSIZE=$SAVEDSIZE
+		fi
+		cat $SAVEDSEED >/dev/urandom
+	else
+		echo "no saved random seed found"
+	fi
+	echo "rewriting random seed"
+	rm -f $SAVEDSEED
+	umask 077
+	dd if=/dev/urandom of=$SAVEDSEED bs=$POOLSIZE count=1 >/dev/null 2>&1
+	umask 022
+	;;
+     stop)
+	echo "saving random seed to ${SAVEDSEED}"
+	umask 077
+	dd if=/dev/urandom of=$SAVEDSEED bs=$POOLSIZE count=1 >/dev/null 2>&1
+	umask 022
+	;;
+esac

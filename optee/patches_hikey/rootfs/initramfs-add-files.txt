@@ -1,0 +1,37 @@
+# Files to add to filesystem.cpio.gz
+# Syntax: same as gen_rootfs/filelist.txt
+
+# Script called by udhcpc (DHCP client) to update the network configuration
+dir /etc/udhcp 755 0 0
+file /etc/udhcp/simple.script ${TOP}/busybox/examples/udhcp/simple.script 755 0 0
+
+# Run this manually after plugging a USB to ethernet adapter
+file /usbnet.sh ${TOP}/patches_hikey/rootfs/usbnet.sh 755 0 0
+
+# rc.d entry for OP-TEE (start on boot)
+file /etc/init.d/optee ${TOP}/patches_hikey/rootfs/init.d.optee 755 0 0
+slink /etc/rc.d/S09_optee /etc/init.d/optee 755 0 0
+
+# OP-TEE client
+file /bin/tee-supplicant ${TOP}/optee_client/out/export/bin/tee-supplicant 755 0 0
+file /lib/libteec.so.1.0 ${TOP}/optee_client/out/export/lib/libteec.so.1.0 755 0 0
+slink /lib/libteec.so.1 libteec.so.1.0 755 0 0
+slink /lib/libteec.so libteec.so.1 755 0 0
+
+# OP-TEE tests
+dir /lib/optee_armtz 755 0 0
+
+# Secure storage
+dir /data 755 0 0
+dir /data/tee 755 0 0
+
+# AES benchmark application
+file /bin/aes-perf ${TOP}/aes-perf/out/aes-perf/aes-perf 755 0 0
+file /lib/optee_armtz/e626662e-c0e2-485c-b8c809fbce6edf3d.ta ${TOP}/aes-perf/out/ta/e626662e-c0e2-485c-b8c809fbce6edf3d.ta 444 0 0
+
+# SHA benchmark application
+file /bin/sha-perf ${TOP}/sha-perf/out/sha-perf/sha-perf 755 0 0
+file /lib/optee_armtz/614789f2-39c0-4ebf-b23592b32ac107ed.ta ${TOP}/sha-perf/out/ta/614789f2-39c0-4ebf-b23592b32ac107ed.ta 444 0 0
+
+# strace tool
+file /bin/strace ${TOP}/strace/strace 755 0 0

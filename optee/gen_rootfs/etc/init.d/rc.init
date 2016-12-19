@@ -1,0 +1,21 @@
+#!/bin/sh
+# Mount all filesystems
+mount -a
+
+# ncurses programs need this.
+export TERMINFO=/usr/share/terminfo
+
+if [ ! -d /var/tmp ]; then
+    mkdir -m a+rwx /var/tmp
+fi
+
+echo "preparing networking..."
+if [ -e /etc/hostname ]; then
+    hostname -F /etc/hostname
+fi
+ifup -a
+
+echo "running rc.d services..."
+
+run-parts -a start /etc/rc.d
+echo -n "uptime idle: "; cat /proc/uptime

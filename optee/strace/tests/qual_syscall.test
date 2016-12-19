@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Ensure that strace -e trace=set works.
+
+. "${srcdir=.}/init.sh"
+
+check_prog ls
+run_strace -e execve ls
+
+grep '^execve(' "$LOG" > /dev/null ||
+	dump_log_and_fail_with "$STRACE $args output mismatch"
+
+grep -v '^execve(' "$LOG" |
+LC_ALL=C grep '^[[:alnum:]_]*(' > /dev/null &&
+	dump_log_and_fail_with "$STRACE $args unexpected output"
+
+run_strace -e trace=process ls
+
+grep '^execve(' "$LOG" > /dev/null ||
+	dump_log_and_fail_with "$STRACE $args output mismatch"
+
+grep '^open' "$LOG" > /dev/null &&
+	dump_log_and_fail_with "$STRACE $args unexpected output"
+
+exit 0

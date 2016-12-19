@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# /etc/init.d/telnetd
+#
+# $Id: telnetd 2827 2005-06-17 12:19:46Z sha $
+#
+case "$1" in
+    start)
+	if [ -e /usr/sbin/telnetd ]; then
+	    echo "Starting telnetd..."
+	    /usr/sbin/telnetd
+	    exit 0
+	elif [ -e /sbin/telnetd ]; then
+	    echo "Starting telnetd..."
+	    /sbin/telnetd
+	    exit 0
+	elif [ -e /sbin/utelnetd ]; then
+	    echo "Starting utelnetd..."
+	    /sbin/utelnetd -d
+	    exit 0
+	else
+	    echo "No telnet daemon found"
+	fi
+
+        ;;
+    stop)
+	;;
+esac

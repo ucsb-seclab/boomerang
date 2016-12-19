@@ -1,0 +1,16 @@
+aes-perf
+arm-trusted-firmware
+build
+burn-boot
+busybox
+edk2
+gen_rootfs
+grub
+l-loader
+linux
+optee_client
+optee_os
+optee_test
+patches_hikey
+sha-perf
+strace

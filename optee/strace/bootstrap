@@ -1,0 +1,21 @@
+#!/bin/sh -eu
+
+for m in m32 mx32; do
+	tests=tests-$m
+	rm -rf $tests
+	mkdir $tests
+	s='[[:space:]]*'
+	sed "s/@arch@/@arch_$m@/;s/^MPERS_NAME$s=.*/& $m/;s/^ARCH_MFLAGS$s=.*/& -$m/" \
+		tests/Makefile.am > $tests/Makefile.am
+	for f in tests/*; do
+		case "${f##*/}" in
+		Makefile*) continue;;
+		esac
+		ln -s ../"$f" $tests/
+	done
+done
+
+./generate_mpers_am.sh
+./xlat/gen.sh
+
+exec autoreconf -f -i "$@"

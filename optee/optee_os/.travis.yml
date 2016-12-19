@@ -1,0 +1,172 @@
+# One may have a look at http://docs.travis-ci.com/user/installing-dependencies/
+
+language: c
+
+notifications:
+  - email: true
+
+sudo: false
+
+cache:
+  ccache: true
+  directories:
+    - $HOME/downloads
+
+git:
+  depth: 1000000
+
+before_install:
+  # Install the cross compilers
+  - wget http://releases.linaro.org/components/toolchain/binaries/5.3-2016.02/arm-linux-gnueabihf/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
+  - tar xf gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
+  - export PATH=${PWD}/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin:${PATH}
+  - arm-linux-gnueabihf-gcc --version
+  - wget http://releases.linaro.org/components/toolchain/binaries/5.3-2016.02/aarch64-linux-gnu/gcc-linaro-5.3-2016.02-x86_64_aarch64-linux-gnu.tar.xz
+  - tar xf gcc-linaro-5.3-2016.02-x86_64_aarch64-linux-gnu.tar.xz
+  - export PATH=${PWD}/gcc-linaro-5.3-2016.02-x86_64_aarch64-linux-gnu/bin:${PATH}
+  - aarch64-linux-gnu-gcc --version
+
+before_script:
+  # Store the home repository
+  - export MYHOME=$PWD
+
+  # Download checkpatch.pl
+  - export DST_KERNEL=$PWD/linux && mkdir -p $DST_KERNEL/scripts && cd $DST_KERNEL/scripts
+  - wget https://raw.githubusercontent.com/torvalds/linux/master/scripts/checkpatch.pl && chmod a+x checkpatch.pl
+  - wget https://raw.githubusercontent.com/torvalds/linux/master/scripts/spelling.txt
+  - cd $MYHOME
+
+  - export DL_DIR=$HOME/downloads
+  - function _download() { url="$1"; f="${2:-$(basename $url)}"; if [ ! -e $DL_DIR/$f ] ; then mkdir -p $DL_DIR ; wget $url -O $DL_DIR/$f ; fi }
+  - function download() { _download "$1" "" ; }
+
+  # Travis assigns 2 CPU cores to the container-based environment, so -j3 is
+  # a good concurrency level
+  # https://docs.travis-ci.com/user/ci-environment/
+  - export make="make -j3 -s"
+
+  # Tools required for QEMU tests
+  # 'apt-get install' cannot be used in the new container-based infrastructure
+  # (which is the only allowing caching), so we just build from sources
+  # bc is used during kernel configuration
+  - cd $HOME
+  - download http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz
+  - tar xf $DL_DIR/bc-1.06.tar.gz
+  - (cd bc-1.06 && CC="ccache gcc" ./configure --quiet && $make)
+  - export PATH=${HOME}/bc-1.06/bc:$PATH
+  # Tcl/Expect
+  - download http://prdownloads.sourceforge.net/tcl/tcl8.6.4-src.tar.gz
+  - tar xf $DL_DIR/tcl8.6.4-src.tar.gz
+  - (cd tcl8.6.4/unix && ./configure --quiet --prefix=${HOME}/inst CC="ccache gcc" && $make install)
+  - _download http://sourceforge.net/projects/expect/files/Expect/5.45/expect5.45.tar.gz/download expect5.45.tar.gz
+  - tar xf $DL_DIR/expect5.45.tar.gz
+  - (cd expect5.45 && ./configure --quiet --with-tcl=${HOME}/inst/lib --prefix=${HOME}/inst CC="ccache gcc" && $make expect && $make install)
+  - export PATH=$HOME/inst/bin:$PATH
+  # pycrypto 2.6.1 or later has Crypto.Signature, 2.4.1 does not. It is needed to sign the test TAs.
+  - pip install --upgrade --user pycrypto
+  - pip install --upgrade --user wand
+  # Clone repositories for the QEMU test environment
+  - mkdir $HOME/bin
+  - (cd $HOME/bin && wget https://storage.googleapis.com/git-repo-downloads/repo && chmod +x repo)
+  - export PATH=$HOME/bin:$PATH
+  - mkdir $HOME/optee_repo
+  - (cd $HOME/optee_repo && repo init -u https://github.com/OP-TEE/manifest.git -m travis.xml </dev/null && repo sync --no-clone-bundle --no-tags --quiet -j 2)
+  - (cd $HOME/optee_repo/qemu && git submodule update --init dtc)
+  - (cd $HOME/optee_repo && mv optee_os optee_os_old && ln -s $MYHOME optee_os)
+  - cd $MYHOME
+  - git fetch https://github.com/OP-TEE/optee_os --tags
+  - unset CC
+
+# Several compilation options are checked
+script:
+  # Run checkpatch.pl
+  - git format-patch -1 --stdout | $DST_KERNEL/scripts/checkpatch.pl --ignore FILE_PATH_CHANGES --ignore GERRIT_CHANGE_ID --no-tree -
+
+  # Orly2
+  - $make PLATFORM=stm PLATFORM_FLAVOR=orly2
+  - $make PLATFORM=stm-orly2 CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=stm-orly2 CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+
+  # Cannes
+  - $make PLATFORM=stm-cannes
+  - $make PLATFORM=stm-cannes CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=stm-cannes CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+
+  # FVP
+  - $make PLATFORM=vexpress-fvp CFG_ARM32_core=y
+  - $make PLATFORM=vexpress-fvp CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=vexpress-fvp CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+  - $make PLATFORM=vexpress-fvp CFG_ARM64_core=y
+  - $make PLATFORM=vexpress-fvp CFG_ARM64_core=y CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=vexpress-fvp CFG_ARM64_core=y CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+
+  # Juno
+  - $make PLATFORM=vexpress-juno
+  - $make PLATFORM=vexpress-juno CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=vexpress-juno CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+  - $make PLATFORM=vexpress-juno CFG_ARM64_core=y
+  - $make PLATFORM=vexpress-juno CFG_ARM64_core=y CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=vexpress-juno CFG_ARM64_core=y CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+
+  # QEMU-virt (PLATFORM=vexpress-qemu_virt)
+  - $make
+  - $make CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+  - $make CFG_CRYPTO=n
+  - $make CFG_CRYPTO_{AES,DES}=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO_{DSA,RSA,DH}=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO_{DSA,RSA,DH,ECC}=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO_{H,C,CBC_}MAC=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO_{G,C}CM=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO_{MD5,SHA{1,224,256,384,512}}=n CFG_ENC_FS=n
+  - $make CFG_CRYPTO=n CFG_CRYPTO_ECC=y CFG_ENC_FS=n
+  - $make CFG_WITH_PAGER=y
+  - $make CFG_WITH_PAGER=y CFG_TEE_CORE_DEBUG=y
+  - $make CFG_WITH_PAGER=y CFG_WITH_LPAE=y
+  - $make CFG_WITH_LPAE=y
+  - $make CFG_ENC_FS=n
+  - $make CFG_ENC_FS=y CFG_FS_BLOCK_CACHE=y
+  - $make CFG_ENC_FS=n CFG_FS_BLOCK_CACHE=y
+  - $make CFG_WITH_STATS=y
+  - $make CFG_RPMB_FS=y
+  - $make CFG_RPMB_FS=y CFG_ENC_FS=n
+  - $make CFG_RPMB_FS=y CFG_ENC_FS=n CFG_RPMB_TESTKEY=y
+  - $make CFG_REE_FS=n CFG_RPMB_FS=y
+  - $make CFG_WITH_USER_TA=n CFG_CRYPTO=n CFG_ENC_FS=n CFG_SE_API=n CFG_PCSC_PASSTHRU_READER_DRV=n
+  - $make CFG_SMALL_PAGE_USER_TA=n
+
+  # QEMU-ARMv8A
+  - $make PLATFORM=vexpress-qemu_armv8a CFG_ARM64_core=y
+
+  # SUNXI(Allwinner A80)
+  - $make PLATFORM=sunxi CFG_TEE_CORE_LOG_LEVEL=4 DEBUG=1
+  - $make PLATFORM=sunxi CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 DEBUG=0
+
+  # HiKey board (HiSilicon Kirin 620)
+  - $make PLATFORM=hikey
+  - $make PLATFORM=hikey CFG_ARM64_core=y
+  - $make PLATFORM=hikey CFG_ARM64_core=y CFG_TEE_TA_LOG_LEVEL=4 DEBUG=1
+
+  # Mediatek mt8173 EVB
+  - $make PLATFORM=mediatek-mt8173 CFG_ARM64_core=y
+
+  # i.MX6UL 14X14 EVK
+  - $make PLATFORM=imx-mx6ulevk
+
+  # Texas Instruments dra7xx
+  - $make PLATFORM=ti-dra7xx
+
+  # Spreadtrum sc9860
+  - $make PLATFORM=sprd-sc9860
+  - $make PLATFORM=sprd-sc9860 CFG_ARM64_core=y
+
+  # FSL ls1021a
+  - $make PLATFORM=ls-ls1021atwr
+  - $make PLATFORM=ls-ls1021aqds
+
+  # Xilinx ZynqMP
+  - $make PLATFORM=zynqmp-zcu102
+  - $make PLATFORM=zynqmp-zcu102 CFG_ARM64_core=y
+
+  # Run regression tests (xtest in QEMU)
+  - (cd ${HOME}/optee_repo/build && $make check CROSS_COMPILE="ccache arm-linux-gnueabihf-" AARCH32_CROSS_COMPILE=arm-linux-gnueabihf- DUMP_LOGS_ON_ERROR=1)

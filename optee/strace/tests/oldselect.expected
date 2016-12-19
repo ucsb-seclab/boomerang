@@ -1,0 +1,2 @@
+select(2, [1], [0], NULL, {0, 42}) = 0 (Timeout)
++++ exited with 0 +++

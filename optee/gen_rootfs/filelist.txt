@@ -1,0 +1,61 @@
+dir /bin 755 0 0
+file /bin/busybox stage/bin/busybox 755 0 0
+slink /init bin/busybox 755 0 0
+dir /sbin 755 0 0
+dir /usr 755 0 0
+dir /usr/bin 755 0 0
+dir /usr/sbin 755 0 0
+dir /boot 755 0 0
+dir /dev 755 0 0
+nod /dev/console 644 0 0 c 5 1
+nod /dev/null 644 0 0 c 1 3
+dir /dev/pts 755 0 0
+dir /etc 755 0 0
+file /etc/fb.modes etc/fb.modes 644 0 0
+file /etc/shadow etc/shadow 644 0 0
+file /etc/profile etc/profile 644 0 0
+dir /etc/init.d 755 0 0
+file /etc/init.d/urandom etc/init.d/urandom 755 0 0
+file /etc/init.d/rc.shutdown etc/init.d/rc.shutdown 755 0 0
+file /etc/init.d/mdev etc/init.d/mdev 755 0 0
+file /etc/init.d/hwclock etc/init.d/hwclock 755 0 0
+file /etc/init.d/rc.init etc/init.d/rc.init 755 0 0
+file /etc/init.d/telnetd etc/init.d/telnetd 755 0 0
+file /etc/init.d/splash etc/init.d/splash 755 0 0
+file /etc/init.d/ledflash etc/init.d/ledflash 755 0 0
+file /etc/rpc etc/rpc 644 0 0
+file /etc/se.kmap etc/se.kmap 644 0 0
+dir /etc/rc.d 755 0 0
+slink /etc/rc.d/S00_mdev /etc/init.d/mdev 755 0 0
+slink /etc/rc.d/S07_telnetd /etc/init.d/telnetd 755 0 0
+slink /etc/rc.d/S01_hwclock /etc/init.d/hwclock 755 0 0
+slink /etc/rc.d/S01_splash /etc/init.d/splash 755 0 0
+slink /etc/rc.d/S08_ledflash /etc/init.d/ledflash 755 0 0
+dir /etc/network 755 0 0
+file /etc/network/interfaces etc/network/interfaces 644 0 0
+dir /etc/network/if-up.d 755 0 0
+dir /etc/network/if-down.d 755 0 0
+dir /etc/network/if-pre-up.d 755 0 0
+dir /etc/network/if-post-down.d 755 0 0
+file /etc/environment etc/environment 644 0 0
+file /etc/passwd etc/passwd 644 0 0
+file /etc/hostname etc/hostname 644 0 0
+file /etc/protocols etc/protocols 644 0 0
+file /etc/inittab etc/inittab 644 0 0
+file /etc/mdev.conf etc/mdev.conf 644 0 0
+file /etc/group etc/group 644 0 0
+file /etc/gshadow etc/gshadow 644 0 0
+file /etc/fstab etc/fstab 644 0 0
+file /etc/hosts etc/hosts 644 0 0
+slink /etc/mtab /proc/mounts 755 0 0
+dir /proc 755 0 0
+dir /sys 755 0 0
+dir /mnt 755 0 0
+dir /debug 755 0 0
+dir /tmp 755 0 0
+dir /var 755 0 0
+dir /var/log 755 0 0
+dir /var/run 755 0 0
+dir /var/lock 755 0 0
+dir /var/tmp 755 0 0
+dir /lib 755 0 0

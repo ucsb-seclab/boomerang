@@ -1,0 +1,17 @@
+export PATH="/usr/bin:/usr/sbin:/bin:/sbin"
+
+PS1="\\u@\\h:\\w "
+PS2=" >"
+PS4="+ "
+
+# source this file for subsequent shells too
+export ENV=/etc/profile
+
+# Exec local profile
+
+if [ -e "/etc/profile.local" ]; then
+	echo "running /etc/profile.local"
+	. /etc/profile.local
+fi
+
+alias ll='ls -al'

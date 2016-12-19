@@ -1,0 +1,17 @@
+#!/bin/sh
+
+umount /mnt # optional
+(
+	set -e -x
+	cd strace
+	./configure
+	make
+	size strace
+	make check VERBOSE=1 &&
+		cat tests/test-suite.log ||:
+	test "x$FTP_PORT" = x ||
+		ftpput -P "$FTP_PORT" "$FTP_SERVER" strace
+) 2>&1 | tee strace_build.log
+mount -o remount,ro /home
+sync
+sleep 1

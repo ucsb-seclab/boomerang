@@ -1,0 +1,18 @@
+#!/bin/sh
+
+LEDS=`find /sys/class/leds/ -type l`
+for led in ${LEDS}
+do
+    if [ -f $led/trigger ] ; then
+	cat $led/trigger | grep '\[none\]' > /dev/null
+    else
+	true
+    fi
+    if  [ $? -eq 0 ] ; then
+	old=`cat $led/brightness`
+	max=`cat $led/max_brightness`
+	echo $max > $led/brightness
+	sleep 0.5
+	echo $old > $led/brightness
+    fi
+done

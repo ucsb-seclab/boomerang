@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Check getrandom syscall decoding.
+
+. "${srcdir=.}/init.sh"
+run_strace_match_diff -a32 -xx -s3

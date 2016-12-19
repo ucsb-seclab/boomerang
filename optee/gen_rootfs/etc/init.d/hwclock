@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# /etc/init.d/hwclock.sh
+#
+# Synchronizes:
+# - system time to hardware RTC clocks on startup
+# - hardware RTC clocks to system time on shutdown
+#
+
+# This program is needed to synchronize the clocks
+HWCLOCK=/sbin/hwclock
+
+# If no primary and secondary clock, nothing is there to sync with!
+if [ ! -c /dev/rtc0 ]; then
+    exit 0
+fi
+
+if [ ! -x $HWCLOCK ]; then
+    echo "NO hwclock in ${HWCLOCK}!"
+    echo "Cannot synchronize RTC hardware clocks!"
+    echo "make sure ${HWCLOCK} is provided!"
+    exit 1
+fi
+
+if [ ! -c /dev/rtc1 ]; then
+    case "$1" in
+	start)
+	    echo "setting system time from /dev/rtc0"
+	    ${HWCLOCK} -s -f /dev/rtc0
+	    ;;
+	stop)
+	    echo "setting /dev/rtc0 from system time"
+	    ${HWCLOCK} -w -f /dev/rtc0
+	    ;;
+    esac
+    exit 0
+fi
+
+if [ -f /sys/class/rtc/rtc0/name ]; then
+    RTC0_NAME=`cat /sys/class/rtc/rtc0/name`
+    if [ "$RTC0_NAME" = "ab3100-rtc" -o "$RTC0_NAME" = "ab8500-rtc" ]; then
+	BACKED_CLOCK="rtc0"
+	SECONDARY_CLOCK=
+    fi
+fi
+
+if [ -f /sys/class/rtc/rtc1/name ]; then
+    RTC1_NAME=`cat /sys/class/rtc/rtc1/name`
+    if [ "$RTC1_NAME" = "ab3100-rtc" -o "$RTC0_NAME" = "ab8500-rtc" ]; then
+	BACKED_CLOCK="rtc1"
+	SECONDARY_CLOCK="rtc0"
+    else
+	SECONDARY_CLOCK="rtc1"
+    fi
+fi
+
+if [ ! -c /dev/${BACKED_CLOCK} ]; then
+    echo "/dev/${BACKED_CLOCK} not available, cannot synchronize clocks!"
+    exit 1
+fi
+
+case "$1" in
+    start)
+	echo "setting system time from ${BACKED_CLOCK}"
+	${HWCLOCK} -s -f /dev/${BACKED_CLOCK}
+	if [ -c /dev/${SECONDARY_CLOCK} ]; then
+	    echo "setting secondary RTC ${SECONDARY_CLOCK} from system time"
+	    ${HWCLOCK} -w -f /dev/${SECONDARY_CLOCK}
+	fi
+        ;;
+    stop)
+	echo "setting ${BACKED_CLOCK} from system time"
+	${HWCLOCK} -w -f /dev/${BACKED_CLOCK}
+	;;
+esac

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Check decoding of utimensat syscall.
+
+. "${srcdir=.}/init.sh"
+
+run_prog > /dev/null
+run_strace -e utimensat $args > "$OUT"
+
+check_prog grep
+LC_ALL=C grep -x "utimensat(.*" "$LOG" > /dev/null || {
+        rm -f "$OUT"
+        skip_ 'test executable does not use utimensat syscall'
+}
+
+match_diff "$LOG" "$OUT"
+
+rm -f "$OUT"
+
+exit 0

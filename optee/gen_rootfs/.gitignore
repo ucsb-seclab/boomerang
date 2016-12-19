@@ -1,0 +1,11 @@
+/busybox
+/build
+/stage
+filelist-all.txt
+filelist-final.txt
+filelist-tee.txt
+filelist.tmp
+filesystem.cpio.gz
+rootfs-fvp-aarch64.cpio
+rootfs-hikey.cpio
+rootfs-vexpress.cpio

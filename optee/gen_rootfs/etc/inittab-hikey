@@ -1,0 +1,10 @@
+#
+# /etc/inittab
+#
+::sysinit:/etc/init.d/rc.init
+# HiKey defaults to UART3 but can also use UART0
+ttyAMA0::askfirst:/bin/sh -sc ". /etc/profile"
+ttyAMA3::askfirst:/bin/sh -sc ". /etc/profile"
+::ctrlaltdel:/sbin/poweroff
+::shutdown:/etc/init.d/rc.shutdown
+::restart:/sbin/init

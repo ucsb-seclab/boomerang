@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# /etc/init.d/optee
+#
+# Start/stop OP-TEE services (kernel module and supplicant)
+#
+case "$1" in
+    start)
+	if [ -e /lib/modules/`uname -r`/optee.ko ]; then
+		echo "Loading OP-TEE driver..."
+		modprobe optee
+		count=20
+		while [ ! -e /dev/teepriv0 -a $count -ne 0 ]
+		do
+			sleep 0.1
+			count=`expr $count - 1`
+		done
+		[ $count -eq 0 ] && exit 1
+	fi
+	if [ -e /bin/tee-supplicant -a -e /dev/teepriv0 ]; then
+		echo "Starting OP-TEE supplicant..."
+		tee-supplicant&
+		exit 0
+	else
+		echo "OP-TEE supplicant or device not found"
+	fi
+
+        ;;
+    stop)
+	killall tee-supplicant
+	if [ -e /dev/teepriv0 -a -e /lib/modules/`uname -r`/optee.ko ]; then
+		modprobe -r optee
+	fi
+	;;
+esac

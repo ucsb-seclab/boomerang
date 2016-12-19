@@ -1,0 +1,13 @@
+#
+# /etc/fstab
+#
+proc	/proc		proc	defaults	0	0
+none	/tmp		ramfs	defaults	0	0
+none	/sys		sysfs	defaults	0	0
+none	/debug		debugfs	defaults        0	0
+none    /sys/kernel/debug debugfs defaults      0       0
+
+none	/var/log	ramfs	defaults	0	0
+none	/var/run	ramfs	defaults	0	0
+none	/var/lock	ramfs	defaults	0	0
+none	/var/tmp	ramfs	defaults	0	0

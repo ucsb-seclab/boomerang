@@ -1,0 +1,60 @@
+#/** @file
+#
+#  Copyright (c) 2014, ARM Ltd. All rights reserved.<BR>
+#  Copyright (c) 2015, Linaro Ltd. All rights reserved.
+#  Copyright (c) 2015, Hisilicon Ltd. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = HiKeyFastbootDxe
+  FILE_GUID                      = 8e335c38-c4e1-494e-8011-37a858d9763d
+  MODULE_TYPE                    = UEFI_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = HiKeyFastbootPlatformEntryPoint
+
+[Sources.common]
+  HiKeyFastboot.c
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  DevicePathLib
+  MemoryAllocationLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+  UefiDriverEntryPoint
+
+[Protocols]
+  gAndroidFastbootPlatformProtocolGuid
+  gEfiBlockIoProtocolGuid
+  gEfiDiskIoProtocolGuid
+  gEfiSimpleTextOutProtocolGuid
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  ArmPlatformPkg/ArmVExpressPkg/ArmVExpressPkg.dec
+  ArmPkg/ArmPkg.dec
+  HisiPkg/HisiPlatformPkg.dec
+
+[Guids]
+  gArmGlobalVariableGuid
+
+[Pcd]
+  gArmPlatformTokenSpaceGuid.PcdFirmwareVendor
+  gHwTokenSpaceGuid.PcdAndroidFastbootNvmDevicePath
+  gHwTokenSpaceGuid.PcdArmFastbootFlashLimit
