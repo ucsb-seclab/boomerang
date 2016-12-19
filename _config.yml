@@ -1,2 +1,3 @@
 theme: jekyll-theme-midnight
-exclude: [X11IncludeHack]
+source: optee
+exclude: [edk2/EmulatorPkg/Unix/Host/X11IncludeHack]
