@@ -1,2 +1,2 @@
 theme: jekyll-theme-midnight
-exclude: X11IncludeHack
+exclude: [X11IncludeHack]
