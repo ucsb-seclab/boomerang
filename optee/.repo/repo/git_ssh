@@ -1,2 +1,0 @@
-#!/bin/sh
-exec ssh -o "ControlMaster no" -o "ControlPath $REPO_SSH_SOCK" "$@"
