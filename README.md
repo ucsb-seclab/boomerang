@@ -65,7 +65,7 @@ All the presentations at various venues can be found under [presentations](https
 These vulnerabilities, and our corresponding exploits, affect hundreds of millions of devices that are currently in production today.
 Our findings have been reported to and verified by the corresponding vendors, who are currently in the process of creating security patches.
 
-CVEs Issued: **CVE-2016-5349, CVE-2016-8762, CVE-2016-8763** and **CVE-2016-8764**
+CVEs Issued: **CVE-2016-5349, CVE-2016-8762, CVE-2016-8763,** and **CVE-2016-8764**
 
 ---
 ## 5. Coming Soon
