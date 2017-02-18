@@ -8,9 +8,10 @@
     4. [Prerequisites](#41-prerequisites)
     4. [Basic setup](#42-basic-setup)
     4. [HiKey](#43-hikey)
-6. [Load driver, tee-supplicant and run xtest](#6-load-driver-tee-supplicant-and-run-xtest)
-7. [Coding standards](#7-coding-standards)
-    7. [checkpatch](#71-checkpatch)
+6. [Cooperative Semantic Reconstruction (CSR)](#6-cooperative-semantic-reconstruction)
+7. [Load driver, tee-supplicant and run xtest](#7-load-driver-tee-supplicant-and-run-xtest)
+8. [Coding standards](#8-coding-standards)
+    8. [checkpatch](#81-checkpatch)
 
 ## 1. Introduction
 The `optee_os git`, contains the source code for the TEE in Linux using the
@@ -149,8 +150,9 @@ Just want to update OP-TEE client software? Put the device in fastboot mode and
 $ make optee-client
 $ make xtest
 ```
-
-## 6. Load driver, tee-supplicant and run xtest
+## 6. Cooperative Semantic Reconstruction (CSR)
+On secure side refer [teemanager](https://github.com/ucsb-seclab/boomerang/blob/master/optee/optee_os/core/arch/arm/kernel/tee_ta_manager.c#L89), on non-secure side refer [rpc](https://github.com/ucsb-seclab/boomerang/blob/master/optee/linux/drivers/tee/optee/rpc.c#L389).
+## 7. Load driver, tee-supplicant and run xtest
 Since release v2.0.0 you don't have to load the kernel driver explicitly. In the
 standard configuration it will be built into the kernel directly. To actually
 run something on a device you however need to run tee-supplicant. This is the
@@ -165,9 +167,13 @@ code you could run xtest (the main test suite for OP-TEE), run
 ```
 $ xtest
 ```
+All the timings for each test will be displayed with prefix "BOOMERANG Time for", you can see all the timing related logs using following command:
+```
+$ xtest | grep BOOMERANG
+```
 
 ---
-## 7. Coding standards
+## 8. Coding standards
 In this project we are trying to adhere to the same coding convention as used in
 the Linux kernel (see
 [CodingStyle](https://www.kernel.org/doc/Documentation/CodingStyle)). We achieve this by running
@@ -184,7 +190,7 @@ the code also follows GlobalPlatform standards. The exceptions are as follows:
   later on (and we don't expect that it is easy to convince other software
   projects to change coding style).
 
-### 7.1 checkpatch
+### 8.1 checkpatch
 Since checkpatch is licensed under the terms of GNU GPL License Version 2, we
 cannot include this script directly into this project. Therefore we have
 written the Makefile so you need to explicitly point to the script by exporting
