@@ -8,7 +8,7 @@
     4. [Prerequisites](#41-prerequisites)
     4. [Basic setup](#42-basic-setup)
     4. [HiKey](#43-hikey)
-6. [Cooperative Semantic Reconstruction (CSR)](#6-cooperative-semantic-reconstruction)
+6. [Cooperative Semantic Reconstruction (CSR)](#6-cooperative-semantic-reconstruction-csr)
 7. [Load driver, tee-supplicant and run xtest](#7-load-driver-tee-supplicant-and-run-xtest)
 8. [Coding standards](#8-coding-standards)
     8. [checkpatch](#81-checkpatch)
